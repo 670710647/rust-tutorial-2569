@@ -196,24 +196,61 @@ let result: Vec<i32> = numbers
 
 ### Example 1 — ระบบคัดเลือกนักศึกษารับทุน (Scholarship system)
 
-**Purpose:** `[ต้องการสาธิตอะไร]`
+**Purpose:** เพื่อสาธิตการประมวลผลข้อมูลด้วย Rust Iterator โดยใช้ filter() ในการคัดเลือกข้อมูล, map() ในการแปลงข้อมูล และ collect() ในการรวบรวมผลลัพธ์ พร้อมแสดงแนวคิดของ Lazy Evaluation ในการทำงานของ Iterator 
 
 ```rust
 fn main() {
-    // Write your runnable Rust code here
+    let scores = vec![35, 50, 68, 72, 90, 45, 80];
+
+    println!("Original Scores: {:?}", scores);
+
+    let scholarship_students = scores // ยังไม่คำนวณ สร้าง pipeline ไว้ก่อน
+        .iter()
+        .filter(|score| **score >= 60)
+        .map(|score| {
+            println!("Adding bonus to: {}", score);
+            score + 5
+        });
+
+    //จุดที่เริ่มประมวลผลจริง
+    let final_scores: Vec<i32> = scholarship_students.collect();
+
+    println!("\n========= Scholarship Award Results =========");
+
+    for score in &final_scores {
+        println!("Student recieved scholarship | Final score: {}", score);
+    }
+
+    println!("\nTotal Scholarship Students: {}", final_scores.len());
+
+    println!("========= Congratuations ! =========");
 }
+
 ```
 
 **Expected Output**
 
 ```text
-[expected output]
+Original Scores: [35, 50, 68, 72, 90, 45, 80]
+Adding bonus to: 68
+Adding bonus to: 72
+Adding bonus to: 90
+Adding bonus to: 80
+
+========= Scholarship Award Results =========
+Student recieved scholarship | Final score: 73
+Student recieved scholarship | Final score: 77
+Student recieved scholarship | Final score: 95
+Student recieved scholarship | Final score: 85
+
+Total Scholarship Students: 4
+========= Congratuations ! =========
 ```
 
 **Explanation**
 
-`[อธิบาย code ทีละส่วนที่สำคัญ]`
-
+โปรแกรมเริ่มต้นจากการรับข้อมูลคะแนนของนักศึกษา จากนั้นสร้าง Iterator เพื่อเข้าถึงข้อมูลทีละรายการ แล้วทำการคัดเลือกเฉพาะนักศึกษาที่มีคะแนนตั้งแต่ 
+คะแนนขึ้นไปด้วย filter() หลังจากนั้นใช้ map() เพื่อเพิ่มคะแนนโบนัสให้กับนักศึกษาที่่ผ่านเกณฑ์ ในขั้นตอนนี้ Rust จะยังไม่ประมวลผลข้อมูลจริง เนื่องจาก Iterator ใช้หลักการ Lazy Evaluation ซึ่งจะรอจนกว่าจะมีการร้องขอผลลัพธ์ เมื่อเรียกใช้ collect() โปรแกรมจึงเริ่มประมวลผลข้อมูลทั้งหมดและรวบรวมผลลัพธ์ออกมาเป็น Vector ใหม่ที่เก็บคะแนนของนักศึกษาที่ได้รับทุนหลังเพิ่มโบนัส
 ---
 
 ### Example 2 — ระบบวิเคราะห์ยอดขายร้านค้า (Sales Analysis)
