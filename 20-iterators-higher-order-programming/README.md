@@ -194,7 +194,7 @@ let result: Vec<i32> = numbers
 
 > **ข้อกำหนด:** Code ทุกตัวต้อง Compile และ Run ได้จริงก่อนนำมาใส่ในเอกสาร
 
-### Example 1 — ระบบคัดเลือกนักศึกษารับทุน (Scholarship_system)
+### Example 1 — ระบบคัดเลือกนักศึกษารับทุน (Scholarship system)
 
 **Purpose:** `[ต้องการสาธิตอะไร]`
 
