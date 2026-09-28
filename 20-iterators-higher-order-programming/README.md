@@ -216,7 +216,7 @@ fn main() {
 
 ---
 
-### Example 2 — `[ชื่อ Example]`
+### Example 2 — ระบบวิเคราะห์ยอดขายร้านค้า (Sales Analysis)
 
 **Purpose:** `[ต้องการสาธิตอะไร]`
 
