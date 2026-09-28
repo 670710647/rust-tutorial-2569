@@ -61,7 +61,7 @@ fn main() {
 
 **Explanation**
 
-`numbers.iter() สร้าง Iterator ที่ขอยืมข้อมูลจาก numbers `
+`numbers.iter() สร้าง Iterator ที่ขอยืมข้อมูลจาก numbers`
 
 ---
 
