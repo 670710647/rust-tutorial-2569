@@ -383,7 +383,6 @@ let out: Vec<i32> = it.collect();     // พิมพ์ processing 1, 2, 3
 trait Iterator {
     type Item;
     fn next(&mut self) -> Option<Self::Item>;
-    // map, filter, fold, ... เป็น default method ที่ได้มาฟรี
 }
 ```
 
