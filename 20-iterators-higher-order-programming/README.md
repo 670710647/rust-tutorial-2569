@@ -14,7 +14,7 @@
 | 1 | นายณัฐชนน รักวงศ์ | 670710646 | `@670710646` | Concept + Short Code Illustration (สรุปแนวคิดหลัก + โค้ดตัวอย่างสั้น) |
 | 2 | นางสาวณัฐฐาพร เสตะวีระ | 670710647 | `@670710647` | Detailed Code + Live Demo (โค้ดเชิงลึก + สาธิตสด) |
 | 3 | นายณัฐดนัย ศรีไวย | 670710648 | `@670710648` | Rust vs Other Language + PPL Analysis (เปรียบเทียบภาษา + วิเคราะห์เชิง PPL) |
-| 4 | นายพรรสวกร สมใจ | 670710651 | `@[กรอก GitHub username]` | Exercises + Common Mistakes + Challenge (แบบฝึกหัด + ข้อผิดพลาดที่พบบ่อย + คำถามท้าทาย) |
+| 4 | นายพรรสวกร สมใจ | 670710651 | `@670710651` | Exercises + Common Mistakes + Challenge (แบบฝึกหัด + ข้อผิดพลาดที่พบบ่อย + คำถามท้าทาย) |
 
 > แก้ไข GitHub Username ของแต่ละคนให้ตรงกับบัญชีจริงก่อนเริ่มทำงาน (ผู้สอนจะใช้คอลัมน์นี้เชิญเป็น collaborator ของ repository)
 
@@ -335,51 +335,90 @@ Total Payment: 252 Baht
 
 ## 7. Common Mistakes
 
-### Mistake 1 — `[ชื่อข้อผิดพลาด]`
+### Mistake 1 — การลืมว่า Iterator ใน Rust เป็นแบบ Lazy Evaluation
 
 **Problem**
 
-`[อธิบายปัญหา]`
+Iterator ใน Rust มีคุณสมบัติ "Lazy" หมายความว่ามันจะไม่ประมวลผลอะไรเลย จนกว่าจะถูกเรียกใช้งานด้วย consuming adaptors (เช่น `.collect()`, `.sum()`, หรือถูกใช้งานใน `for` loop) มือใหม่มักเขียน chain ของ Iterator ทิ้งไว้โดยไม่ดึงค่าออกมา ทำให้โค้ดส่วนนั้นไม่ถูกทำงาน
 
 **Incorrect Code**
 
 ```rust
-// Incorrect example
+fn main() {
+    let numbers = vec![1, 2, 3];
+    
+    // โค้ดนี้จะไม่ทำอะไรเลย compiler จะแจ้งเตือน unused `Map`
+    numbers.iter().map(|x| println!("Processing: {}", x));
+}
 ```
 
 **Correct Code**
 
 ```rust
-// Correct example
+fn main() {
+    let numbers = vec![1, 2, 3];
+    
+    // วิธีที่ 1: ใช้ for loop เพื่อบริโภคค่า
+    for _ in numbers.iter().map(|x| println!("Processing: {}", x)) {
+        // Iterator ถูกกระตุ้นให้ทำงานแล้ว
+    }
+    
+    // วิธีที่ 2: ใช้ .collect() หากต้องการนำผลลัพธ์ไปใช้ต่อ
+    let _processed: Vec<_> = numbers.iter().map(|x| x * 2).collect();
+}
 ```
 
 **Why?**
 
-`[อธิบายสาเหตุ]`
+Rust ออกแบบมาให้ทำงานเร็วและประหยัดทรัพยากร การเป็น Lazy ทำให้ Rust ไม่ต้องเสียเวลาสร้าง Collection ชั่วคราวในแต่ละขั้นตอนของ chain จนกว่าจะถึงจุดที่จำเป็นต้องใช้ผลลัพธ์จริงๆ
 
 ---
 
-### Mistake 2 — `[ชื่อข้อผิดพลาด]`
+### Mistake 2 — สับสนระหว่าง iter(), iter_mut(), และ into_iter()
 
 **Problem**
 
-`[อธิบายปัญหา]`
+การเลือกใช้เมธอดสร้าง Iterator ผิดประเภท ทำให้เกิดปัญหา Ownership โดยเฉพาะการเผลอใช้ into_iter() ซึ่งจะย้ายกรรมสิทธิ์ (Move) ของตัวแปรไป ทำให้ไม่สามารถเรียกใช้ Collection ต้นทางได้อีก
 
 **Incorrect Code**
 
 ```rust
-// Incorrect example
+fn main() {
+    let names = vec![String::from("Alice"), String::from("Bob")];
+    
+    // into_iter() จะกิน (consume) ownership ของ names เข้าไป
+    for name in names.into_iter() {
+        println!("Hello, {}", name);
+    }
+    
+    // Error: borrow of moved value: `names`
+    println!("Total names: {}", names.len()); 
+}
 ```
 
 **Correct Code**
 
 ```rust
-// Correct example
+fn main() {
+    let names = vec![String::from("Alice"), String::from("Bob")];
+    
+    // ใช้ iter() เพื่อขอยืมค่า (Borrow) มาอ่านเท่านั้น
+    for name in names.iter() {
+        println!("Hello, {}", name);
+    }
+    
+    // สามารถเรียกใช้ names ต่อได้ตามปกติ
+    println!("Total names: {}", names.len()); 
+}
 ```
 
 **Why?**
 
-`[อธิบายสาเหตุ]`
+.iter(): ยืมค่าแบบอ่านอย่างเดียว (&T)
+
+.iter_mut(): ยืมค่าแบบแก้ไขได้ (&mut T)
+
+.into_iter(): ย้ายกรรมสิทธิ์แบบสมบูรณ์ (T) เหมาะสำหรับตอนที่เราไม่ต้องการใช้ Collection ต้นทางอีกต่อไป
 
 ---
 
@@ -387,47 +426,88 @@ Total Payment: 252 Baht
 
 > จัดทำแบบฝึกหัด **2 ข้อ** ที่สอดคล้องกับ Topic และมีระดับความยากเหมาะสม
 
-### Exercise 1 — `[ชื่อโจทย์]`
+### Exercise 1 — `ภารกิจส่งมาม่ากู้ภัยน้ำท่วม (mama rescue missions)`
 
 **Problem**
+สถานการณ์น้ำท่วมปีนี้หนักหน่วงมาก เราจึงมี Vector ที่เก็บข้อมูลชื่อจังหวัดและระดับน้ำ (เซนติเมตร) ดังนี้
+`let areas = vec![("Chiang Rai", 150), ("Phayao", 80), ("Chiang Mai", 120), ("Bangkok", 15)];`
 
-`[เขียนโจทย์]`
+โจทย์
+จงเขียน chain ของ Iterator เพื่อทำภารกิจต่อไปนี้:
+1. กรอง (filter) เอาเฉพาะจังหวัดที่ระดับน้ำ มากกว่าหรือเท่ากับ 100 ซม.
+2. แปลงข้อมูล (map) จังหวัดเหล่านั้นให้ออกมาเป็นข้อความ String ว่า `"[ชื่อจังหวัด] เตรียมเรือและมาม่าด่วน!"`
+3. รวบรวมผลลัพธ์เก็บลงใน `Vec<String>` และ print ออกมา
 
 **Hint**
 
-`[คำใบ้]`
+ใช้ `.iter()`, `.filter()`, `.map()`, และ `.collect::<Vec<String>>()` 
 
 **Solution**
 
 ```rust
-// Solution code
+fn main() {
+    let areas = vec![
+        ("Chiang Rai", 150), 
+        ("Phayao", 80), 
+        ("Chiang Mai", 120), 
+        ("Bangkok", 15)
+    ];
+    
+    let rescue_missions: Vec<String> = areas
+        .iter()
+        .filter(|&&(_, water_level)| water_level >= 100) // กรองระดับน้ำ >= 100
+        .map(|&(province, _)| format!("{} เตรียมเรือและมาม่าด่วน!", province)) // สร้างข้อความ
+        .collect(); // รวบรวมเป็น Vector ใหม่
+        
+    for mission in rescue_missions {
+        println!("{}", mission);
+    }
+    // Expected Output:
+    // Chiang Rai เตรียมเรือและมาม่าด่วน!
+    // Chiang Mai เตรียมเรือและมาม่าด่วน!
+}
 ```
 
 **Explanation**
 
-`[อธิบายแนวทางแก้]`
+โจทย์ข้อนี้แสดงให้เห็นการใช้งาน Data Pipeline เราใช้ filter กรองทิ้งจังหวัดที่น้ำไม่ท่วม (สังเกตการใช้ &&(_, water_level) เพื่อแกะเอาเฉพาะค่าระดับน้ำออกมาเช็ค) จากนั้นใช้ map ร่วมกับมาโคร format! เพื่อสร้าง String ข้อความกู้ภัยใหม่ และจบด้วย collect() เพื่อให้ Iterator ยอมทำงานแบบ Lazy Evaluation
 
 ---
 
-### Exercise 2 — `[ชื่อโจทย์]`
+### Exercise 2 — `รวมเหรียญทองเอเชียนเกมส์ 2026 (total gold coin)`
 
 **Problem**
 
-`[เขียนโจทย์]`
+ในการแข่งขัน Aichi-Nagoya 2026 Asian Games ทีมชาติไทยคว้าเหรียญทองมาได้จากหลายกีฬา เรามี Vector เก็บชนิดกีฬาและจำนวนเหรียญทองที่ได้ดังนี้:
+let medals = vec![("ตะกร้อ", 4), ("Esports", 1), ("Tamiya", 5), ("มวยไทย", 3)];
+จงหลีกเลี่ยงการใช้ for loop แบบเดิมๆ แต่ให้ใช้เมธอด .fold() ในการยุบรวมข้อมูล (Accumulate) เพื่อหา "จำนวนเหรียญทองรวมทั้งหมด" ที่ทีมชาติไทยทำได้
 
 **Hint**
 
-`[คำใบ้]`
+เมธอด .fold() รับพารามิเตอร์ 2 ตัว คือค่าเริ่มต้น (เริ่มที่ 0) และ Closure |acc, x| ที่ใช้สะสมผลรวม
 
 **Solution**
 
 ```rust
-// Solution code
+fn main() {
+    let medals = vec![
+        ("ตะกร้อ", 4), 
+        ("Esports (RoV)", 1), 
+        ("Tamiya", 5), 
+        ("มวยไทย", 3)
+    ];
+    
+    // fold(ค่าเริ่มต้น, |ตัวสะสม, ไอเทมปัจจุบัน|)
+    let total_gold = medals.iter().fold(0, |acc, &(_, count)| acc + count);
+    
+    println!("ไทยแลนด์ คว้าเหรียญทองรวมทั้งหมด: {} เหรียญ", total_gold);
+    // Expected Output: ไทยแลนด์ คว้าเหรียญทองรวมทั้งหมด: 13 เหรียญ
+}
 ```
 
 **Explanation**
 
-`[อธิบายแนวทางแก้]`
+เราเรียกใช้ .fold(0, ...) เพื่อตั้งค่าเริ่มต้นการนับเป็น 0 ในแต่ละรอบของการดึงค่า Closure จะรับค่า acc (ยอดรวมเหรียญที่สะสมมา) และแกะเอาค่า count ออกมาจาก Tuple ของข้อมูลปัจจุบัน นำมาบวกกันแล้วส่งไปเป็น acc ในรอบถัดไปจนจบ การเขียนแบบนี้ทำให้โค้ดสั้น กระชับ และไม่จำเป็นต้องประกาศตัวแปรแบบ mut เพื่อมานั่งบวกค่าทีละรอบเลย
 
 ---
 
@@ -720,7 +800,7 @@ C ไม่มีแนวคิด iterator หรือ higher-order programmi
 
 **Member 4**
 
-`[สิ่งที่รับผิดชอบ]`
+`Exercises + Common Mistakes + Challenge (แบบฝึกหัด + ข้อผิดพลาดที่พบบ่อย + คำถามท้าทาย)`
 
 > สมาชิกทุกคนต้องสามารถอธิบาย Code ของกลุ่มได้ ไม่ใช่เฉพาะส่วนที่ตนเองเขียน
 
