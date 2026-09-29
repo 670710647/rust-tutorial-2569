@@ -13,7 +13,7 @@
 |---|---|---|---|---|
 | 1 | นายณัฐชนน รักวงศ์ | 670710646 | `@670710646` | Concept + Short Code Illustration (สรุปแนวคิดหลัก + โค้ดตัวอย่างสั้น) |
 | 2 | นางสาวณัฐฐาพร เสตะวีระ | 670710647 | `@670710647` | Detailed Code + Live Demo (โค้ดเชิงลึก + สาธิตสด) |
-| 3 | นายณัฐดนัย ศรีไวย | 670710648 | `@670710648 ` | Rust vs Other Language + PPL Analysis (เปรียบเทียบภาษา + วิเคราะห์เชิง PPL) |
+| 3 | นายณัฐดนัย ศรีไวย | 670710648 | `@670710648` | Rust vs Other Language + PPL Analysis (เปรียบเทียบภาษา + วิเคราะห์เชิง PPL) |
 | 4 | นายพรรสวกร สมใจ | 670710651 | `@[กรอก GitHub username]` | Exercises + Common Mistakes + Challenge (แบบฝึกหัด + ข้อผิดพลาดที่พบบ่อย + คำถามท้าทาย) |
 
 > แก้ไข GitHub Username ของแต่ละคนให้ตรงกับบัญชีจริงก่อนเริ่มทำงาน (ผู้สอนจะใช้คอลัมน์นี้เชิญเป็น collaborator ของ repository)
@@ -708,7 +708,7 @@ C ไม่มีแนวคิด iterator หรือ higher-order programmi
 
 **Member 1**
 
-`[สิ่งที่รับผิดชอบ]`
+`Concept + Short Code Illustration (สรุปแนวคิดหลัก + โค้ดตัวอย่างสั้น)`
 
 **Member 2**
 
@@ -730,10 +730,17 @@ C ไม่มีแนวคิด iterator หรือ higher-order programmi
 
 > แนะนำให้มีอย่างน้อย **4 แหล่งอ้างอิง** และควรใช้เอกสารทางการเป็นหลัก
 
-1. `[The Rust Programming Language — Rust Book]`
-2. `[Rust by Example / Rust Reference]`
-3. `[Official documentation ที่เกี่ยวข้องกับ Topic]`
-4. `[แหล่งอ้างอิงเพิ่มเติม]`
+1. `Rust Foundation. Iterator Trait — Rust Standard Library Documentation.` <br> 
+   https://doc.rust-lang.org/std/iter/trait.Iterator.html
+
+2. `Rust Foundation. Iterators — The Rust Programming Language.`<br>
+   https://doc.rust-lang.org/book/ch13-02-iterators.html
+
+3. `Rust Foundation. Closures — The Rust Programming Language.`<br> 
+   https://doc.rust-lang.org/book/ch13-01-closures.html
+
+4. `GeeksforGeeks. Rust - Higher Order Functions.`<br> 
+   https://www.geeksforgeeks.org/rust/rust-higher-order-functions/
 
 ---
 
@@ -743,7 +750,7 @@ C ไม่มีแนวคิด iterator หรือ higher-order programmi
 
 | AI Tool | Purpose | How the Result Was Verified |
 |---|---|---|
-| `[เช่น ChatGPT]` | `[ใช้เพื่ออะไร]` | `[ตรวจสอบอย่างไร]` |
+| `ChatGPT` | `แก้ไขวิธีการรันโปรแกรม` | `สามารถรันโปรแกรมได้` |
 | `[AI tool]` | `[ใช้เพื่ออะไร]` | `[ตรวจสอบอย่างไร]` |
 
 ### Declaration
@@ -755,7 +762,7 @@ C ไม่มีแนวคิด iterator หรือ higher-order programmi
 
 **รายละเอียดการใช้ AI**
 
-`[อธิบายว่าใช้ AI ในขั้นตอนใด และสมาชิกตรวจสอบผลลัพธ์อย่างไร]`
+`1. ใช้ก่อนเริ่มทำ project เพื่อเตรียมพื้นฐานสำหรับภาษา rust เช่น Cargo.toml เพื่อให้โปรแกรมสามารถรันได้`
 
 ---
 
@@ -763,7 +770,7 @@ C ไม่มีแนวคิด iterator หรือ higher-order programmi
 
 | Member | Issues | Commits | Pull Requests | Code Reviews | Contribution |
 |---|---:|---:|---:|---:|---|
-| Member 1 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอียด]` |
+| Member 1 | `0` | `12` | `0` | `0` | `เขียน/แก้โค้ด` |
 | Member 2 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอียด]` |
 | Member 3 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอียด]` |
 | Member 4 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอียด]` |
@@ -772,15 +779,15 @@ C ไม่มีแนวคิด iterator หรือ higher-order programmi
 
 **How did your team collaborate?**
 
-`[อธิบายกระบวนการทำงานร่วมกัน]`
+`ทำงานร่วมกันผ่าน Github โดย fork แยกออกมาจาก module หลัก แล้ว pull request เมื่อเสร็จ`
 
 **Problems encountered**
 
-`[ปัญหาที่พบ]`
+`การแก้ไขโค้ดในเวลาเดียวกันทำให้เกิด merge conflict`
 
 **How did you solve them?**
 
-`[วิธีแก้ปัญหา]`
+`แบ่งขอบเขตการทำงานให้ชัดเจน, แยกเวลากันทำงาน, เลือกของใครคนใดคนหนึ่งในส่วนที่เกิด conflict`
 
 ---
 
@@ -806,7 +813,7 @@ C ไม่มีแนวคิด iterator หรือ higher-order programmi
 
 ## Submission Information
 
-**Repository:** `https://github.com/670710647/rust-tutorial-2569/edit/main/20-iterators-higher-order-programming`
+**Repository:** `https://github.com/670710647/rust-tutorial-2569`
 
 **Chapter Path:** `chapters/20-iterators-higher-order-programming/`
 
