@@ -792,7 +792,7 @@ C ไม่มีแนวคิด iterator หรือ higher-order programmi
 
 **Member 2**
 
-`[สิ่งที่รับผิดชอบ]`
+`Detailed Code + Live Demo (โค้ดเชิงลึก + สาธิตสด)`
 
 **Member 3**
 
