@@ -700,14 +700,6 @@ fn main() {
 นอกจากนี้ Borrow Checker ป้องกันการแก้ collection ขณะวนลูปอยู่ เช่น `v.push(...)` ภายใน `for x in v.iter()` จะเกิด Compile-time Error (E0502) 
 
 **ตัวอย่าง**
-```rust
-trait Iterator {
-        type Item;
-        fn next(&mut self) -> Option<Self::Item>;
-}
-```
-
-<br>
 
 ```rust
 let mut v = vec![1, 2, 3];
@@ -720,6 +712,13 @@ for x in v.iter() {  // iter() ยืมแบบอ่านแต่แก้�
 ### 9.5 Abstraction / Other PPL Concepts
 
 Iterator เป็น Abstraction ของ "การ loop ข้อมูลจากตัวแรกจนถึงตัวสุดท้าย"
+
+```rust
+trait Iterator {
+        type Item;
+        fn next(&mut self) -> Option<Self::Item>;
+}
+```
 
 **ตัวอย่าง**
 
