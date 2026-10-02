@@ -866,7 +866,7 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 
 **Member 3**
 
-`[สิ่งที่รับผิดชอบ]`
+`Rust vs Other Language + PPL Analysis (เปรียบเทียบภาษา + วิเคราะห์เชิง PPL)`
 
 **Member 4**
 
@@ -892,6 +892,11 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 4. `GeeksforGeeks. Rust - Higher Order Functions.`<br> 
    https://www.geeksforgeeks.org/rust/rust-higher-order-functions/
 
+5. `Crust of Rust: Iterators - Jon Gjengset.` <br>
+    https://www.youtube.com/watch?v=yozQ9C69pNs
+ 
+6. `82: Iterators in Rust are Awesome - Rustfully.` <br>
+    https://www.youtube.com/watch?v=BEPhAIkw6x8
 ---
 
 ## 13. AI Usage Declaration
@@ -912,9 +917,9 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 
 **รายละเอียดการใช้ AI**
 
-`1. ใช้ก่อนเริ่มทำ project เพื่อเตรียมพื้นฐานสำหรับภาษา rust เช่น Cargo.toml เพื่อให้โปรแกรมสามารถรันได้`
-`2. ใช้ถาม syntax และวิธีการเขียน fn หรือรูปย่อในรูปแบบอื่นๆ`
-`3. ใช้เปรียบเทียบ code ภาษา rust กับภาษาอื่นๆ และแก้ error`
+`1. ใช้ก่อนเริ่มทำ project เพื่อเตรียมพื้นฐานสำหรับภาษา Rust เช่น Cargo.toml` <br>
+`2. ใช้ถาม syntax และวิธีการเขียน fn หรือรูปแบบอื่นๆ` <br>
+`3. ใช้เปรียบเทียบ code ภาษา Rust กับภาษาอื่นๆ และแก้ error`
 
 ---
 
@@ -924,7 +929,7 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 |---|---:|---:|---:|---:|---|
 | Member 1 | `0` | `12` | `0` | `0` | `เขียน/แก้โค้ด` |
 | Member 2 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอียด]` |
-| Member 3 | `0` | `5` | `0` | `0` | `ทำหัวข้อ ppl และ rust vs other language` |
+| Member 3 | `0` | `6` | `0` | `0` | `ทำหัวข้อ ppl และ rust vs other language` |
 | Member 4 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอีDยด]` |
 
 ### Teamwork Reflection
