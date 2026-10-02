@@ -444,7 +444,7 @@ fn main() {
     let rescue_missions: Vec<String> = areas
         .iter()
         .filter(|&&(_, water_level)| water_level >= 100) 
-        .map(|&(province, _)| format!("{} เตรียมเรือและมาม่าด่วน", province)) 
+        .map(|&(province, _)| format!("{} prepare boats and mama rn", province)) 
         .collect(); 
         
     println!("{:?}", rescue_missions);
@@ -460,7 +460,7 @@ fn main() {
 
 **Solution**
 
-ผลลัพธ์ที่ได้คือ: ["Chiang Rai เตรียมเรือและมาม่าด่วน ", "Chiang Mai เตรียมเรือและมาม่าด่วน"]
+ผลลัพธ์ที่ได้คือ: ["Chiang Rai prepare boats and mama rn ", "Chiang Mai prepare boats and mama rn"]
 
 **Explanation**
 
@@ -478,21 +478,21 @@ fn main() {
 **Problem**
 
 ในการแข่งขัน Aichi-Nagoya 2026 Asian Games ทีมชาติไทยคว้าเหรียญทองมาได้จากหลายกีฬา เรามี Vector เก็บชนิดกีฬาและจำนวนเหรียญทองที่ได้ดังนี้:
-let medals = vec![("ตะกร้อ", 4), ("Esports", 1), ("Tamiya", 5), ("มวยไทย", 3)];
+let medals = vec![("Sepak Takraw", 4), ("Esports", 1), ("Tamiya", 5), ("Muay Tha", 3)];
 
 ```rust
 fn main() {
     let medals = vec![
-        ("ตะกร้อ", 4), 
+        ("Sepak Takraw", 4), 
         ("Esports (RoV)", 1), 
-        ("Tamiya", 5), //กีกีฬา Tamiya เพิ่งถูกบรรจุใหม่ที่สนาม Nagoya-grand prix 
-        ("มวยไทย", 3)
+        ("Tamiya", 5), //กีฬา Tamiya เพิ่งถูกบรรจุใหม่ที่สนาม Nagoya-grand prix 
+        ("Muay Tha", 3)
     ];
     
     // fold(ค่าเริ่มต้น, |ตัวสะสม, ไอเทมปัจจุบัน|)
     let total_gold = medals.iter().fold(2, |acc, &(_, count)| acc + count);
     
-    println!("ไทยแลนด์ คว้าเหรียญทองรวมทั้งหมด: {} เหรียญ", total_gold);
+    println!("Thailand Total gold medals won: {} medals", total_gold);
 }
 ```
 
@@ -506,7 +506,7 @@ fn main() {
 
 **Solution**
 
-ไทยแลนด์ คว้าเหรียญทองรวมทั้งหมด: 15 เหรียญ
+Thailand Total gold medals won: 15 medals
 
 **Explanation**
 
