@@ -492,7 +492,7 @@ fn main() {
     // fold(ค่าเริ่มต้น, |ตัวสะสม, ไอเทมปัจจุบัน|)
     let total_gold = medals.iter().fold(2, |acc, &(_, count)| acc + count);
     
-    println!("Thailand Total gold medals won: {} medals", total_gold);
+    println!("Thailand total gold medals won: {} medals", total_gold);
 }
 ```
 
@@ -968,7 +968,7 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 | Member 1 | `0` | `12` | `0` | `0` | `เขียน/แก้โค้ด` |
 | Member 2 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอียด]` |
 | Member 3 | `0` | `8` | `0` | `0` | `ทำหัวข้อ ppl และ rust vs other language` |
-| Member 4 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอีDยด]` |
+| Member 4 | `0` | `6` | `0` | `0` | `ทำหัวข้อ common mistake และ exercises /เปลี่ยน exercises` |
 
 ### Teamwork Reflection
 
