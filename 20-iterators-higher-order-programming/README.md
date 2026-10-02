@@ -643,7 +643,7 @@ fn func<I: Iterator<Item = i32>, F: Fn(i32) -> i32>(items: I, f: F) -> Vec<i32> 
     items.map(f).collect()
 }
 /*
-fn apply_all<I, F>(items: I, f: F) -> Vec<i32>
+fn func<I, F>(items: I, f: F) -> Vec<i32>
 where
     I: Iterator<Item = i32>,
     F: Fn(i32) -> i32,
@@ -718,6 +718,13 @@ for x in v.iter() {  // iter() ยืมแบบอ่านแต่แก้�
 ### 9.5 Abstraction / Other PPL Concepts
 
 Iterator เป็น Abstraction ของ "การ loop ข้อมูลจากตัวแรกจนถึงตัวสุดท้าย"
+
+```rust
+trait Iterator {
+        type Item;
+        fn next(&mut self) -> Option<Self::Item>;
+}
+```
 
 **ตัวอย่าง**
 
@@ -960,7 +967,7 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 |---|---:|---:|---:|---:|---|
 | Member 1 | `0` | `12` | `0` | `0` | `เขียน/แก้โค้ด` |
 | Member 2 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอียด]` |
-| Member 3 | `0` | `7` | `0` | `0` | `ทำหัวข้อ ppl และ rust vs other language` |
+| Member 3 | `0` | `8` | `0` | `0` | `ทำหัวข้อ ppl และ rust vs other language` |
 | Member 4 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอีDยด]` |
 
 ### Teamwork Reflection
