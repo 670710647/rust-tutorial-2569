@@ -562,7 +562,30 @@ fn main() {
 
 ### 9.2 Semantics
 
-Iterator ทุกตัวทำงานผ่าน method `next()` ที่คืน `Option` โดย `Some(value)` คือยังมีข้อมูล และ `None` คือหมดแล้ว ลูป `for` ก็คือการเรียก `next()` ซ้ำจนได้ `None` นอกจากนี้ Adaptor เป็น **Lazy** คือไม่คำนวณจนกว่าจะมี Consumer มาดึงค่า
+- Iterator ทุกตัวทำงานผ่าน method `next()` ที่คืน `Option` โดย `Some(value)` คือยังมีข้อมูล และ `None` คือหมดแล้ว 
+- loop `for` ก็คือการเรียก `next()` ซ้ำจนได้ `None` 
+- Short-Circuit จะหยุดเมื่อเจอสิ่งที่ต้องการแล้ว `take_while()`, `any()` จึงใช้กับเลขไม่รู้จบได้ เช่น `(1..)`
+
+**ตัวอย่าง**
+
+```rust
+let v: Vec<i32> = [1, 2, 3, 10, 4, 5]
+    .iter()
+    .copied()
+    .take_while(|&x| x < 5)
+    .collect();
+```
+ผลลัพธ์
+```text
+[1, 2, 3]
+```
+<br>
+
+```rust
+let has_even = [1, 3, 4, 7].iter().any(|&x| x % 2 == 0); // true, หยุดที่ 4
+```
+
+- Adaptor เป็น Lazy Evaluation คือ ไม่คำนวณจนกว่าจะมี Consumer มาดึงค่า
 
 **ตัวอย่าง**
 
@@ -676,6 +699,8 @@ fn main() {
 
 นอกจากนี้ Borrow Checker ป้องกันการแก้ collection ขณะวนลูปอยู่ เช่น `v.push(...)` ภายใน `for x in v.iter()` จะเกิด Compile-time Error (E0502) 
 
+**ตัวอย่าง**
+
 ```rust
 let mut v = vec![1, 2, 3];
 
@@ -688,7 +713,7 @@ for x in v.iter() {  // iter() ยืมแบบอ่านแต่แก้�
 
 Iterator เป็น Abstraction ของ "การ loop ข้อมูลจากตัวแรกจนถึงตัวสุดท้าย"
 
-**ตัวอย่าง: สร้าง Iterator เอง**
+**ตัวอย่าง**
 
 ```rust
 struct Countdown(u32);
@@ -929,7 +954,7 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 |---|---:|---:|---:|---:|---|
 | Member 1 | `0` | `12` | `0` | `0` | `เขียน/แก้โค้ด` |
 | Member 2 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอียด]` |
-| Member 3 | `0` | `6` | `0` | `0` | `ทำหัวข้อ ppl และ rust vs other language` |
+| Member 3 | `0` | `7` | `0` | `0` | `ทำหัวข้อ ppl และ rust vs other language` |
 | Member 4 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอีDยด]` |
 
 ### Teamwork Reflection
