@@ -511,7 +511,7 @@ fn main() {
 
 ---
 
-### 9. PPL Perspective
+## 9. PPL Perspective
 
 > **ส่วนนี้เป็นหัวใจของรายวิชา Principles of Programming Languages**
 
@@ -519,257 +519,327 @@ fn main() {
 
 ### 9.1 Syntax
 
-- **Method chaining:** ใช้เครื่องหมาย `.` ต่อ method จากซ้ายไปขวาตามลำดับการประมวลผล เช่น `.iter().filter(..).map(..).collect()`
-- **Closure syntax:** เขียนด้วย `|พารามิเตอร์| นิพจน์` เช่น `|number| number * 2` หรือ `|number| { number * 2 }`
-- **Pattern ใน parameter:** closure และ `for` รองรับ destructuring เช่น `|&number|` หรือ `|(index, value)|`
-- **Type annotation สำหรับ `collect`:** ระบุชนิดข้อมูลด้วย `let v: Vec<_> = ...` (vec) หรือใช้ turbofish `collect::<Vec<_>>()`
-- **`for` loop:** เป็น syntactic sugar ที่เรียก `IntoIterator::into_iter()` และวน `next()` ให้อัตโนมัติ
+การประมวลผลข้อมูลใน Rust แบบ Iterator เขียนเป็นลูกโซ่ 3 ส่วน คือ **Source → Adaptor → Consumer** โดย Adaptor เช่น `map` และ `filter` เป็น Higher-Order Function ที่รับ "ฟังก์ชัน" เข้าไปกำหนดพฤติกรรม
+
+**ตัวอย่าง**
 
 ```rust
-let doubled = vec![1, 2, 3];.iter().map(|number| number * 2).collect::<Vec<_>>();
-```
+fn is_even(x: &i32) -> bool {
+    x % 2 == 0
+}
 
-### 9.2 Semantics
+fn square(x: i32) -> i32 {
+    x * x
+}
 
-- **ความหมายของ `iter()`:** ไม่ได้ทำงานทันที เป็นเพียงการสร้าง iterator ที่ยืมข้อมูลมา
-- **Adapter vs Consumer:** adapter (`map`, `filter`, `take`) เป็น lazy เพียงคืน iterator ตัวใหม่ ส่วน consumer (`collect`, `fold`, `sum`, `for`) คือตัวที่ดึงข้อมูลออกมาและทำให้ chain ประมวลผลจริง
-- **Lazy evaluation:** adapter จะไม่ประมวลผลจนกว่าจะมี consumer เรียกใช้ ดูตัวอย่างลำดับการทำงาน:
+fn main() {
+    let numbers = vec![1, 2, 3, 4, 5, 6];
 
-```rust
-let it = vec![1, 2, 3].iter().map(|number| {
-    println!("processing {}", number);
-    number * 2
-});
+    let result: Vec<i32> = numbers
+        .iter()          // Source
+        .copied()        // Adaptor: copy numbers แยกกับ numbers ownership ใหม่
+        .filter(is_even) 
+        .map(square)     
+        .collect();      // Consumer
 
-println!("before collect");           // ยังไม่พิมพ์ processing
-let out: Vec<i32> = it.collect();     // พิมพ์ processing 1, 2, 3
-```
-
-- **การประมวลผลทีละ element (pull-based):** เมื่อมี consumer, element แต่ละตัวจะผ่านทั้งสาย `filter -> map -> ...` ครบก่อนจึงไปตัวถัดไป
-- **Short-circuit:** consumer อย่าง `find position` หยุดทันทีเมื่อได้คำตอบ
-- **Iterator ใช้ครั้งเดียว:** consumer ส่วนใหญ่ เช่น `collect`, `fold`, `sum` รับ iterator ไปทั้งตัว (ownership) จึงเรียกใช้ iterator ตัวเดิมซ้ำไม่ได้
-- **ความหมายของ `fold`:** `fold(init, |acc, number| ...)` คือการลดรูป (reduction) จากซ้ายไปขวา โดย `acc` คือค่าที่สะสมมาถึงตอนนี้
-
-### 9.3 Type System
-
-- **`Iterator` trait:** ประกอบด้วย associated type `Item` และเมธอด `next(&mut self) -> Option<Self::Item>` โดย `None` หมายถึงหมดข้อมูล
-
-```rust
-trait Iterator {
-    type Item;
-    fn next(&mut self) -> Option<Self::Item>;
+    println!("{:?}", result);
 }
 ```
 
-- **Adapter เป็น struct ที่มี generic:** `map` คืนค่าเป็น `Map<I, F>` และ `filter` คืน `Filter<I, P>` ทำให้ compiler รู้ชนิดครบตอน compile time
-- **Closure type:** closure แต่ละตัวมีชนิดเฉพาะตัวที่ compiler สร้างให้ และ implement trait `Fn`, `FnMut`, `FnOnce` ให้อัตโนมัติตามวิธีที่ใช้ตัวแปรที่จับมา (`Fn` เป็นกรณีที่เข้มที่สุดและใช้ได้ในบริบทของ `FnMut` และ `FnOnce` ด้วย)
+ผลลัพธ์
 
-| Trait | เงื่อนไขของ closure | เรียกได้กี่ครั้ง |
-|-|-|-|
-| `FnOnce` | ทุก closure เป็นได้ (อาจย้ายตัวแปรที่จับออกไปใช้) | 1 ครั้ง |
-| `FnMut` | ไม่ย้ายตัวแปรที่จับออก แต่อาจแก้ไขได้ | หลายครั้ง |
-| `Fn` | ไม่ย้ายและไม่แก้ไขตัวแปรที่จับ | หลายครั้ง |
+```text
+[4, 16, 36]
+```
 
-- **Type inference:** compiler อนุมานชนิดของ parameter และ return ของ closure จากบริบทได้ ไม่ต้องเขียนชนิดเอง
-- **`collect` ใช้ trait `FromIterator`:** ชนิดปลายทางเป็นตัวกำหนดผลลัพธ์ เช่น `Vec<T>`, `HashSet<T>`, `String` และยังรวมเป็น `Result<Vec<T>, E>` หรือ `Option<Vec<T>>` ได้
-- **ชนิดของ `Item` ต่างกันตามวิธีสร้าง iterator:**
+รูปแบบไวยากรณ์ที่สำคัญ
 
-| เมธอด | `Item` | ความหมาย |
-|-|-|-|
-| `iter()` | `&T` | ยืมแบบอ่านอย่างเดียว |
-| `iter_mut()` | `&mut T` | ยืมแบบแก้ไขได้ |
-| `into_iter()` | `T` | ย้าย ownership ออกมา |
+- Source: `.iter()`, `.into_iter()`, `1..=5` สร้าง iterator จากข้อมูล
+- Adaptor: `.map()`, `.filter()`, `.take()`, `.enumerate()`, `.zip()` คืน iterator ตัวใหม่
+- Consumer: `.collect()`, `.sum()`, `.fold()`, `.count()` ดึงค่าออกมาเป็นผลลัพธ์
+- `for x in iterator { ... }` วนลูปผ่าน iterator
+- `fn func<F: Fn(i32) -> i32>(f: F)` ฟังก์ชันที่รับฟังก์ชันเป็น parameter (ส่งได้ทั้งฟังก์ชันชื่อและ closure `|x| x + 1`)
+
+### 9.2 Semantics
+
+Iterator ทุกตัวทำงานผ่าน method `next()` ที่คืน `Option` โดย `Some(value)` คือยังมีข้อมูล และ `None` คือหมดแล้ว ลูป `for` ก็คือการเรียก `next()` ซ้ำจนได้ `None` นอกจากนี้ Adaptor เป็น **Lazy** คือไม่คำนวณจนกว่าจะมี Consumer มาดึงค่า
+
+**ตัวอย่าง**
+
+```rust
+fn main() {
+    let numbers = vec![1, 2, 3, 4, 5];
+
+    let first_two: Vec<i32> = numbers
+        .iter()
+        .map(|x| {
+            println!("map {}", x);
+            x * 2
+        })
+        .take(2)
+        .collect();
+
+    println!("{:?}", first_two);
+}
+```
+
+ผลลัพธ์
+
+```text
+map 1
+map 2
+[2, 4]
+```
+
+ข้อมูลมี 5 ตัว แต่ `map` ทำงานเพียง 2 ครั้ง เพราะ `take(2)` ต้องการแค่ 2 ค่า และ Lazy Evaluation ทำให้ไม่คำนวณส่วนที่เหลือ
+
+### 9.3 Type System
+
+- `Iterator<Item = T>` คือ iterator ที่ส่งค่าชนิด `T` ออกมาทีละตัว (`Item` เป็น Associated Type)
+- Adaptor แต่ละตัวคืน type ใหม่ที่ห่อตัวเดิมไว้ เช่น `Map<I, F>` และ `Filter<I, P>` ซึ่ง compiler รู้ตั้งแต่ตอน Compile
+```rust
+let v = vec![1, 2, 3, 4];
+
+let a = v.iter();                    // Iter<i32>
+let b = a.filter(|x| **x > 1);       // Filter<Iter<i32>, closure1>
+let c = b.map(|x| x * 10);           // Map<Filter<Iter<i32>, closure1>, closure2>
+```
+- Parameter ที่เป็นฟังก์ชันระบุด้วย Trait Bound เช่น `fn func<F: Fn(i32) -> i32>(f: F, value: i32) -> i32` หรือใช้ function pointer `fn func(f: fn(i32) -> i32, value: i32) -> i32`
+- `collect()` ต้องรู้ชนิดปลายทาง เช่น `Vec<i32>` เพราะ collect เป็น `Vec`, `HashSet` หรือ `String` ได้
+
+**ตัวอย่าง**
+
+```rust
+fn func<I: Iterator<Item = i32>, F: Fn(i32) -> i32>(items: I, f: F) -> Vec<i32> {
+    items.map(f).collect()
+}
+/*
+fn apply_all<I, F>(items: I, f: F) -> Vec<i32>
+where
+    I: Iterator<Item = i32>,
+    F: Fn(i32) -> i32,
+{
+    items.map(f).collect()
+}
+*/
+
+fn main() {
+    println!("{:?}", apply_all(1..=3, |x| x * 10));                  
+    println!("{:?}", apply_all(vec![4, 5].into_iter(), |x| x + 1));  
+}
+```
+
+ผลลัพธ์
+
+```text
+[10, 20, 30]
+[5, 6]
+```
+
+`func` รับ iterator ชนิดใดก็ได้ที่ส่ง `i32` และรับฟังก์ชันที่เป็น `i32` และส่ง `i32` ถ้าส่งชนิดไม่ตรง compiler จะแจ้ง error ก่อนรันโปรแกรม
 
 ### 9.4 Memory / Resource Management
 
-- **Ownership และ borrowing เกี่ยวข้องโดยตรง:** `iter()` ยืม collection ไว้ ระหว่างที่ iterator ยังถูกใช้งานอยู่จะแก้ไข collection ต้นทางไม่ได้ (borrow checker ป้องกัน) ส่วน `into_iter()` ย้าย ownership เข้าไปใน iterator
-- **ไม่มี intermediate allocation:** เพราะเป็น lazy evaluation, method chaining `map`/`filter` จึงไม่สร้าง `Vec` ชั่วคราวระหว่างทาง ใช้หน่วยความจำ stack เป็นหลัก มี heap allocation เฉพาะตอน `collect` สร้าง collection ใหม่
-- **Closure capture:** closure จับตัวแปรได้ 3 แบบ คือยืมแบบอ่าน, ยืมแบบแก้ไข หรือ `move` เพื่อย้าย ownership เข้าไป
-- **Zero-cost abstraction:** compiler ทำ monomorphization และ inlining ทำให้ iterator chain ถูกแปลงเป็น loop ธรรมดา ประสิทธิภาพใกล้เคียงหรือเท่ากับเขียน `for` loop เอง
-- **ไม่มี garbage collector:** ทรัพยากรถูกคืนอัตโนมัติผ่าน `Drop` เมื่อ iterator หรือ collection ออกนอก scope
+Iterator ใช้ระบบ Ownership และ Borrowing โดยวิธีสร้าง iterator ที่ต่างกันมีผลต่อ collection เดิมต่างกัน
+
+- `iter()`: ยืมข้อมูลมาอ่าน (`&T`) collection เดิมยังใช้ต่อได้
+- `iter_mut()`: ยืมข้อมูลมาแก้ไข (`&mut T`)
+- `into_iter()`: ย้าย ownership เข้า iterator (`T`) collection เดิมใช้ต่อไม่ได้
+- Iterator Chain ไม่สร้าง collection ชั่วคราวระหว่างขั้นตอน จึงไม่เปลือง Heap เพิ่ม
+
+**ตัวอย่าง**
+
+```rust
+fn main() {
+    let mut scores = vec![50, 60, 70];
+
+    let total: i32 = scores.iter().sum();             // ยืมอ่าน
+    println!("{} {:?}", total, scores);             
+
+    for s in scores.iter_mut() {                      // ยืมแก้ได้
+        *s += 10;
+    }
+    println!("{:?}", scores);                       
+
+    let doubled: Vec<i32> = scores.into_iter().map(|s| s * 2).collect(); // ย้าย ownership
+    // println!("{:?}", scores);                      // Error: scores ถูก move แล้ว
+    println!("{:?}", doubled);                       
+```
+
+ผลลัพธ์
+
+```text
+180 [50, 60, 70]
+[60, 70, 80]
+[120, 140, 160]
+```
+
+นอกจากนี้ Borrow Checker ป้องกันการแก้ collection ขณะวนลูปอยู่ เช่น `v.push(...)` ภายใน `for x in v.iter()` จะเกิด Compile-time Error (E0502) 
+
+```rust
+let mut v = vec![1, 2, 3];
+
+for x in v.iter() {  // iter() ยืมแบบอ่านแต่แก้ไม่ได้
+    v.push(*x);      // error[E0502]
+}
+```
 
 ### 9.5 Abstraction / Other PPL Concepts
 
-- **Abstraction:** `Iterator` trait ซ่อนรายละเอียดว่าข้อมูลมาจากไหน (array, `Vec`, ไฟล์, ช่วงตัวเลข, network) ผู้ใช้เห็นเพียงอินเทอร์เฟซเดียวคือ `next()`
-- **Paradigm:** ผสม **functional programming** (HOF, closure, immutability by default) เข้ากับ **imperative/systems programming** ในภาษาเดียว
-- **Higher-order function:** ฟังก์ชันอย่าง `map` รับ closure เป็น argument และ function ถือเป็น first-class value
-- **Generics และ trait bound:** ฟังก์ชันที่รับ closure เขียนด้วย bound เช่น `fn apply<F: Fn(i32) -> i32>(f: F, x: i32) -> i32`
-- **Composability:** ต่อ adapter หลายตัวเข้าด้วยกันเป็น pipeline ได้ และสร้าง iterator ของตัวเองได้โดย implement `Iterator`
-- **Scope และ binding:** closure มี lexical scope จับตัวแปรจาก environment ที่สร้างมัน (lexical closure)
-- **Infinite iterator:** เพราะ lazy evaluation จึงสร้างลำดับไม่จำกัดได้ เช่น `(1..).filter(..).take(5)`
+Iterator เป็น Abstraction ของ "การ loop ข้อมูลจากตัวแรกจนถึงตัวสุดท้าย"
+
+**ตัวอย่าง: สร้าง Iterator เอง**
+
+```rust
+struct Countdown(u32);
+
+impl Iterator for Countdown {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<u32> {
+        if self.0 == 0 {
+            None
+        } else {
+            self.0 -= 1;
+            Some(self.0 + 1)
+        }
+    }
+}
+
+fn main() {
+    let total: u32 = Countdown(5).filter(|x| x % 2 == 1).sum();
+    println!("{}", total);
+}
+```
+
+ผลลัพธ์
+
+```text
+9
+```
+
+เมื่อ implement `next()` เพียงตัวเดียว `Countdown` ก็ใช้ `filter`, `map`, `sum` และ Adaptor อื่น ๆ ได้ทันที
+
+**Other PPL Concepts**
+
+- Scope: ตัวแปรของ iterator และ closure อยู่ภายใต้ Lexical Scope 
+- Binding: รับฟังก์ชันผ่าน Generic (`F: Fn`) ผูกตอน Compile (Static Dispatch) ส่วนกรณีที่ไม่รู้ชนิดจริง จะรู้ตอนรันโปรแกรม `dyn` ผูกตอน Runtime (Dynamic Dispatch)
+- Paradigm: Rust เป็น Multi-paradigm โดย Iterator และ Higher-Order Function รองรับ Functional Programming (First-class Function) แต่ไม่ใช่ภาษา Functional แบบ pure เพราะยังมี Side Effect (ฟังก์ชันทำนอกเหนือจากการคืนค่า เช่น พิมพ์ออกจอ เขียนไฟล์ แก้ตัวแปรภายนอก)
 
 ### 9.6 Why Rust?
 
-- **Safety:** borrow checker ป้องกัน iterator invalidation (การแก้ collection ระหว่างวน) ตั้งแต่ตอน compile ซึ่งเป็นบั๊กที่พบบ่อยใน C++
-- **Reliability:** `Option` จาก `next()` บังคับให้จัดการกรณีข้อมูลหมด (None) และ `collect` รวม error ทำให้จัดการได้ทีเดียว
-- **Performance:** zero-cost abstraction ทำให้เขียนโค้ดระดับสูงแบบ functional ได้โดยไม่เสียความเร็วเมื่อเทียบกับ loop เขียนมือ
-- **Expressiveness:** โค้ดสั้น อ่านง่าย
-- **Concurrency:** ต่อยอดเป็น parallel iterator ได้ง่าย (เช่น crate `rayon` ที่เปลี่ยน `iter()` เป็น `par_iter()`) โดยยังได้ความปลอดภัยด้าน data race จาก type system
+- Memory Safety: Borrow Checker ตรวจการยืมและการ move ของ iterator ป้องกันการใช้ข้อมูลที่ถูก move ไปแล้วหรือถูกแก้ไขขณะวนลูป
+- Reliability: `next()` คืน `Option` จึงต้องจัดการกรณีข้อมูลหมดอย่างชัดเจน และ type ของ Adaptor ทุกตัวถูกตรวจตอน Compile
+- Performance: Iterator Chain เป็น Zero-Cost Abstraction เพราะ Lazy ไม่สร้าง collection ชั่วคราว และ compiler inline ฟังก์ชันที่ส่งผ่าน Generic ได้
+- No Garbage Collector: จัดการทรัพยากรด้วย Ownership และจัดการค่าตาม scope
 
 ---
 
 ## 10. Rust vs. Other Language
 
-**Comparison Language:** `Python` / `Java` / `C`
+**Comparison Language:** `Python`, `Java`, `C`
 
----
+| Aspect | Rust | Python | Java | C |
+|-|-|-|-|-|
+| Syntax | Iterator chain `.iter().filter().map().sum()` ส่งฟังก์ชันหรือ closure เข้า adaptor | `map(f, filter(g, data))` ใช้ `lambda` หรือ generator expression | Stream API `.stream().filter().mapToInt().sum()` ส่ง lambda เข้า operation | ไม่มี syntax พิเศษ เขียนลูป `for` เองและส่ง function pointer `int (*f)(int)` |
+| Semantics / Behavior | Iterator เป็น Lazy ทำงานเมื่อมี consumer และ `next()` คืน `Option` | `map`, `filter`, generator เป็น Lazy ผ่าน Iterator Protocol (`__next__`) แต่ list comprehension คำนวณทันที | Stream เป็น Lazy ทำงานเมื่อเจอ terminal operation และใช้ซ้ำไม่ได้หลังถูกใช้แล้ว | ไม่มี Lazy Evaluation ลูปคำนวณทันทีตามที่เขียน |
+| Type System | Static + strong typing ใช้ `Iterator<Item = T>` และ Trait `Fn` ตรวจตอน Compile | Dynamic + strong typing ตรวจ type ของ argument ใน lambda ตอน Runtime | Static + strong typing ใช้ `Stream<T>` และ Functional Interface เช่น `Predicate`, `Function` | Static typing function pointer ระบุ signature ได้ แต่ compiler ตรวจได้จำกัด (cast ผิดชนิดได้) |
+| Memory Management | Ownership, Borrowing, Lifetime ไม่มี Garbage Collector | Reference Counting ร่วมกับ Garbage Collector | Garbage Collector และ Stream สร้าง Object ภายในระหว่าง pipeline | Programmer จัดการเอง (`malloc`/`free`) ไม่มี Garbage Collector |
+| Safety | Compiler ตรวจการยืมและการ move ของ iterator ก่อน compile ป้องกัน Iterator Invalidation | แก้ list ขณะวนลูปได้ ผลลัพธ์อาจผิดปกติโดยไม่มี error | แก้ collection ขณะวนลูปอาจเกิด `ConcurrentModificationException` ตอน Runtime | ไม่ตรวจขอบเขต array เข้าถึงเกิน index จะเกิด Undefined Behavior |
 
-### Rust vs. Python
-
-| Aspect | Rust | Python |
-|-|-|-|
-| Syntax | method chaining `.iter().filter(..).map(..).collect()` และ closure แบบ `\|number\| number * 2` | list comprehension `[x*x for x in numbers if ...]` หรือ `map(lambda x: ..., filter(...))` |
-| Semantics / Behavior | adapter (`map`, `filter`) เป็น lazy ทำงานเมื่อมี consumer (`collect`, `fold`, `sum`) เรียกเท่านั้น | `map`/`filter` และ generator expression เป็น lazy แต่ list comprehension เป็น eager สร้าง list ทันที |
-| Type System | static + strong ใช้ trait `Iterator`, `Fn*`, `FromIterator` ตรวจชนิดครบตอน compile | dynamic typing ตรวจชนิดตอน runtime ใช้ iterator protocol (`__iter__`, `__next__`) แบบ duck typing |
-| Memory Management | ownership + borrowing ไม่มี GC ไม่สร้าง collection ชั่วคราวระหว่าง chain และคืนทรัพยากรผ่าน `Drop` | garbage collector (reference counting + cycle GC) list comprehension สร้าง list ใหม่บน heap |
-| Safety | borrow checker ป้องกันการแก้ collection ขณะวน และป้องกัน data race ตั้งแต่ compile time | แก้ list ขณะวนได้โดยไม่ error ที่ compile อาจเกิดพฤติกรรมไม่คาดคิด (`dict` ขึ้น `RuntimeError` ตอนรัน) |
-
-#### Rust Example
+### Rust Example
 
 ```rust
 fn main() {
-    let numbers = vec![1, 2, 3, 4, 5, 6];
+    let numbers = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    // เลือกเลขคู่ -> ยกกำลังสอง
-    let result: Vec<i32> = numbers
+    let result: i32 = numbers
         .iter()
-        .filter(|number| **number % 2 == 0)
-        .map(|number| number * number)
-        .collect();
+        .filter(|&&x| x % 2 == 0)
+        .map(|&x| x * x)
+        .sum();
 
-    println!("{:?}", result); // [4, 16, 36]
+    println!("{}", result);
 }
 ```
 
-#### Python Example
+`filter` และ `map` เป็น Higher-Order Function ที่รับฟังก์ชันเข้าไปกำหนดเงื่อนไขและการแปลงค่า และทำงานแบบ Lazy เมื่อ `sum()` ดึงค่า โดยไม่สร้าง Vec ชั่วคราว
+
+### Analysis
+
+Rust ประมวลผลข้อมูลด้วย Iterator Chain ที่เป็น Lazy และตรวจ type กับการยืมข้อมูลของ iterator ตั้งแต่ Compile Time ส่วน Higher-Order Function อย่าง `filter` และ `map` รับฟังก์ชันผ่าน Trait Bound ที่ compiler ตรวจสอบได้
+
+### Python Example
 
 ```python
-numbers = [1, 2, 3, 4, 5, 6]
+numbers = list(range(1, 11))
 
-# list comprehension (eager)
-result = [x * x for x in numbers if x % 2 == 0]
+result = sum(map(lambda x: x * x, filter(lambda x: x % 2 == 0, numbers)))
 
-# แบบ lazy ด้วย generator expression
-lazy = (x * x for x in numbers if x % 2 == 0)
-
-print(result)        # [4, 16, 36]
-print(list(lazy))    # [4, 16, 36]
+print(result)
 ```
 
-#### Analysis
+Python มี `map` และ `filter` เป็น Higher-Order Function ในตัว และมี Iterator Protocol (`__next__`) ที่ `map`/`filter` เป็น Lazy เช่นกัน แต่ไม่มีการตรวจ type ก่อนรัน
 
-ทั้งสองภาษารองรับการเขียนแบบ functional และมี lazy iterator เหมือนกัน แต่ต่างกันที่ **เวลาที่ตรวจสอบและวิธีจัดการทรัพยากร** Rust ตรวจชนิดและ borrowing ตอน compile จึงจับข้อผิดพลาดได้ก่อนรัน และแปลง iterator chain เป็น native loop ได้เต็มประสิทธิภาพ (zero-cost abstraction) ส่วน Python ออกแบบให้ยืดหยุ่นและเขียนเร็ว ใช้ dynamic typing และ GC จึงมี overhead จาก interpreter แต่เขียนสั้นและ prototype ได้เร็วกว่า เหตุผลด้านการออกแบบคือ Rust เน้น **safety + performance** ส่วน Python เน้น **productivity + readability**
+### Analysis
 
----
+Python เป็น Dynamic Typing จึงเขียนสั้นและยืดหยุ่น และมี Generator ที่สร้าง iterator ได้ง่าย แต่ข้อผิดพลาดด้าน type ในฟังก์ชันที่ส่งเข้า `map`/`filter` จะพบตอน Runtime ส่วน Rust ตรวจตั้งแต่ Compile Time
 
-### Rust vs. Java
-
-| Aspect | Rust | Java |
-|---|---|---|
-| Syntax | method chaining บน iterator และ closure `\|number\| number * 2` | Stream API `numbers.stream().filter(..).map(..).collect(..)` และ lambda `x -> x * 2` |
-| Semantics / Behavior | adapter เป็น lazy รอ consumer ประมวลผลทีละ element และรองรับ short-circuit เช่น `find`, `any` | intermediate operation (`filter`, `map`) เป็น lazy รอ terminal operation (`collect`, `reduce`) และรองรับ short-circuit เช่น `findFirst`, `anyMatch` |
-| Type System | static + strong ใช้ generics แบบ monomorphization และ trait `Fn`, `FnMut`, `FnOnce` สำหรับ closure | static + strong ใช้ generics แบบ type erasure และ functional interface เช่น `Predicate<T>`, `Function<T,R>` สำหรับ lambda |
-| Memory Management | ownership + borrowing ไม่มี GC คืนทรัพยากรผ่าน `Drop` | garbage collector (JVM) stream ไม่สร้าง collection กลางทางเช่นกัน แต่ `Stream<Integer>` มี boxing ทำให้มี object เพิ่มบน heap (`IntStream` ช่วยลดได้) |
-| Safety | borrow checker ป้องกัน iterator invalidation ตั้งแต่ compile time | แก้ collection ขณะวนจะเกิด `ConcurrentModificationException` ตอน runtime และ lambda จับได้เฉพาะตัวแปร effectively final |
-
-#### Rust Example
-
-```rust
-fn main() {
-    let numbers = vec![1, 2, 3, 4, 5, 6];
-
-    let result: Vec<i32> = numbers
-        .iter()
-        .filter(|number| **number % 2 == 0)
-        .map(|number| number * number)
-        .collect();
-
-    println!("{:?}", result); // [4, 16, 36]
-}
-```
-
-#### Java Example
+### Java Example
 
 ```java
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
-        List<Integer> numbers = List.of(1, 2, 3, 4, 5, 6);
+        List<Integer> numbers = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-        List<Integer> result = numbers.stream()
-            .filter(x -> x % 2 == 0)
-            .map(x -> x * x)
-            .collect(Collectors.toList());
+        int result = numbers.stream()
+                .filter(x -> x % 2 == 0)
+                .mapToInt(x -> x * x)
+                .sum();
 
-        System.out.println(result); // [4, 16, 36]
+        System.out.println(result);
     }
 }
 ```
 
-#### Analysis
+Java ใช้ Stream API ที่มี pipeline `filter → map → sum` คล้าย Rust แต่ต้องเรียก `.stream()` ก่อน และใช้ `mapToInt` เพื่อแปลงเป็น `IntStream`
 
-Java Stream API มีแนวคิดใกล้เคียง Rust iterator มาก คือเป็น lazy pipeline ที่แยก adapter ออกจาก consumer ความต่างสำคัญอยู่ที่ **ชั้นล่างของภาษา** Java รันบน JVM พร้อม GC และ generics แบบ type erasure จึงมี overhead จาก boxing และ object allocation ส่วน Rust คอมไพล์เป็น native และตรวจ ownership ตอน compile จึงไม่ต้องมี runtime ช่วยเก็บกวาดหน่วยความจำ และป้องกันบั๊กอย่างการแก้ collection ขณะวนได้ตั้งแต่ก่อนรัน การออกแบบของ Java เน้น **ความเรียบง่ายและ portability** (write once, run anywhere) ขณะที่ Rust เน้น **การควบคุมทรัพยากรโดยไม่เสียความปลอดภัย**
+### Analysis
 
----
+ทั้งสองภาษามี pipeline แบบ Functional และเป็น Lazy เหมือนกัน แต่ Java ทำงานบน JVM พร้อม Garbage Collector และ Stream ใช้ซ้ำไม่ได้ ส่วน Rust ควบคุมการยืม/ย้ายข้อมูลของ iterator ด้วย Ownership 
 
-### Rust vs. C
-
-| Aspect | Rust | C |
-|---|---|---|
-| Syntax | method chaining บน iterator และ closure `\|number\| number * 2` | ไม่มี syntax พิเศษ ใช้ `for` loop เอง หรือส่ง function pointer เช่น `int (*f)(int)` |
-| Semantics / Behavior | adapter เป็น lazy ทำงานเมื่อมี consumer เรียก | ไม่มี lazy evaluation ในตัว ทุกอย่างเป็น eager ต้องออกแบบ state และ `next()` เองหากต้องการ |
-| Type System | static + strong มี generics, trait และ closure ที่คอมไพเลอร์อนุมานชนิดให้ | static แต่ weak ไม่มี generics จริง (มีเพียง macro และ `_Generic` ที่จำกัด) และไม่มี closure ต้องใช้ `void*` ส่งข้อมูลซึ่งเสียความปลอดภัยด้านชนิด |
-| Memory Management | ownership + borrowing คืนทรัพยากรอัตโนมัติผ่าน `Drop` | จัดการเอง (`malloc`/`free`) ผลลัพธ์แต่ละขั้นต้องจอง buffer เองและคืนเอง |
-| Safety | ใน safe Rust compiler ป้องกัน use-after-free, dangling reference และ data race | ไม่มีการป้องกัน เสี่ยง buffer overflow, use-after-free, dangling pointer และ undefined behavior |
-
-#### Rust Example
-
-```rust
-fn main() {
-    let numbers = vec![1, 2, 3, 4, 5, 6];
-
-    let result: Vec<i32> = numbers
-        .iter()
-        .filter(|number| **number % 2 == 0)
-        .map(|number| number * number)
-        .collect();
-
-    println!("{:?}", result); // [4, 16, 36]
-}
-```
-
-#### C Example
+### C Example
 
 ```c
 #include <stdio.h>
 
-int main(void) {
-    int numbers[] = {1, 2, 3, 4, 5, 6};
-    int n = sizeof(numbers) / sizeof(numbers[0]);
+int is_even(int x) { return x % 2 == 0; }
+int square(int x) { return x * x; }
 
-    int result[6];
-    int count = 0;
-
-    // เลือกเลขคู่ -> ยกกำลังสอง ด้วย loop เอง
+int sum_if_map(int *arr, int n, int (*pred)(int), int (*f)(int)) {
+    int total = 0;
     for (int i = 0; i < n; i++) {
-        if (numbers[i] % 2 == 0) {
-            result[count++] = numbers[i] * numbers[i];
+        if (pred(arr[i])) {
+            total += f(arr[i]);
         }
     }
+    return total;
+}
 
-    for (int i = 0; i < count; i++) {
-        printf("%d ", result[i]); // 4 16 36
-    }
-    printf("\n");
+int main() {
+    int numbers[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    printf("%d\n", sum_if_map(numbers, 10, is_even, square));
     return 0;
 }
 ```
 
-#### Analysis
+C ไม่มี iterator ในตัวภาษา จึงเขียนลูปเองและส่งขนาด array (`n`) เอง ส่วน Higher-Order Function ทำได้ผ่าน function pointer (เช่น `qsort` ในไลบรารีมาตรฐาน)
 
-C ไม่มีแนวคิด iterator หรือ higher-order programming ในตัว ผู้เขียนต้องคุม loop, ขนาด buffer และหน่วยความจำเองทั้งหมด ซึ่งให้ประสิทธิภาพและการควบคุมสูงสุด แต่เปิดช่องให้เกิดบั๊กร้ายแรง เช่น เขียนเกินขอบ array Rust จึงถูกออกแบบมาเพื่อ **คงประสิทธิภาพระดับ C แต่ย้ายความรับผิดชอบด้านความปลอดภัยไปให้ compiler** ด้วย ownership และ borrow checker พร้อมเพิ่ม abstraction ระดับสูงอย่าง iterator ที่ถูกแปลงเป็นโค้ดใกล้เคียง loop ที่เขียนด้วยมือ จึงได้ทั้งความกระชับและความเร็วโดยไม่ต้องแลกกับความปลอดภัย
+### Analysis
+C ทำ Higher-Order Function ได้ผ่าน function pointer แต่ไม่มี Iterator, Adaptor หรือ Lazy Evaluation ให้ Programmer ต้องเขียนลูปและดูแลขอบเขตของ array เอง ส่วน Rust มี Iterator ที่ตรวจขอบเขตและการยืมข้อมูลให้ เพราะ C ออกแบบมาเพื่อควบคุม Hardware และ Memory โดยตรง จึงมีกลไกระดับภาษาน้อยและให้ Programmer รับผิดชอบเอง
 
 ---
 
@@ -831,7 +901,7 @@ C ไม่มีแนวคิด iterator หรือ higher-order programmi
 | AI Tool | Purpose | How the Result Was Verified |
 |---|---|---|
 | `ChatGPT` | `แก้ไขวิธีการรันโปรแกรม` | `สามารถรันโปรแกรมได้` |
-| `[AI tool]` | `[ใช้เพื่ออะไร]` | `[ตรวจสอบอย่างไร]` |
+| `Claude` | `ถาม syntax, semantic และตรวจสอบความถูกต้องของcode` | `code runได้,อ่านเทียบข้อมูลที่ได้จากแหล่งอ้างอิง` |
 
 ### Declaration
 
