@@ -637,7 +637,7 @@ fn func<I: Iterator<Item = i32>, F: Fn(i32) -> i32>(items: I, f: F) -> Vec<i32> 
     items.map(f).collect()
 }
 /*
-fn apply_all<I, F>(items: I, f: F) -> Vec<i32>
+fn func<I, F>(items: I, f: F) -> Vec<i32>
 where
     I: Iterator<Item = i32>,
     F: Fn(i32) -> i32,
@@ -700,6 +700,14 @@ fn main() {
 นอกจากนี้ Borrow Checker ป้องกันการแก้ collection ขณะวนลูปอยู่ เช่น `v.push(...)` ภายใน `for x in v.iter()` จะเกิด Compile-time Error (E0502) 
 
 **ตัวอย่าง**
+```rust
+trait Iterator {
+        type Item;
+        fn next(&mut self) -> Option<Self::Item>;
+}
+```
+
+<br>
 
 ```rust
 let mut v = vec![1, 2, 3];
@@ -954,7 +962,7 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 |---|---:|---:|---:|---:|---|
 | Member 1 | `0` | `12` | `0` | `0` | `เขียน/แก้โค้ด` |
 | Member 2 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอียด]` |
-| Member 3 | `0` | `7` | `0` | `0` | `ทำหัวข้อ ppl และ rust vs other language` |
+| Member 3 | `0` | `8` | `0` | `0` | `ทำหัวข้อ ppl และ rust vs other language` |
 | Member 4 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอีDยด]` |
 
 ### Teamwork Reflection
