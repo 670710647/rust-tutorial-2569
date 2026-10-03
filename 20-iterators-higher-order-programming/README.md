@@ -967,7 +967,7 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 | Member | Issues | Commits | Pull Requests | Code Reviews | Contribution |
 |---|---:|---:|---:|---:|---|
 | Member 1 | `0` | `12` | `0` | `0` | `เขียน/แก้โค้ด` |
-| Member 2 | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[จำนวน]` | `[รายละเอียด]` |
+| Member 2 | `0` | `42` | `0` | `0` | `ทำหัวข้อ Detailed code` |
 | Member 3 | `0` | `8` | `0` | `0` | `ทำหัวข้อ ppl และ rust vs other language` |
 | Member 4 | `0` | `6` | `0` | `0` | `ทำหัวข้อ common mistake และ exercises /เปลี่ยน exercises` |
 
