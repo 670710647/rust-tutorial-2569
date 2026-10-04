@@ -1013,7 +1013,7 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 
 **Chapter Path:** `/20-iterators-higher-order-programming/`
 
-**Final PR:** `#17`
+**Final PR:** `#42`
 
 **Submitted by:** `Group 20`
 
