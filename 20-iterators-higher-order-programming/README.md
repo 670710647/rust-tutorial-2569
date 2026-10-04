@@ -949,10 +949,10 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 
 ### Declaration
 
-- [ ] Code ทุกส่วนที่นำเสนอได้รับการ Compile และทดสอบแล้ว
-- [ ] สมาชิกทุกคนสามารถอธิบาย Code ที่นำเสนอได้
-- [ ] ตรวจสอบข้อมูลจากแหล่งอ้างอิงที่น่าเชื่อถือแล้ว
-- [ ] ระบุการใช้ AI อย่างโปร่งใส
+- [✅] Code ทุกส่วนที่นำเสนอได้รับการ Compile และทดสอบแล้ว
+- [✅] สมาชิกทุกคนสามารถอธิบาย Code ที่นำเสนอได้
+- [✅] ตรวจสอบข้อมูลจากแหล่งอ้างอิงที่น่าเชื่อถือแล้ว
+- [✅] ระบุการใช้ AI อย่างโปร่งใส
 
 **รายละเอียดการใช้ AI**
 
@@ -967,7 +967,7 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 | Member | Issues | Commits | Pull Requests | Code Reviews | Contribution |
 |---|---:|---:|---:|---:|---|
 | Member 1 | `0` | `12` | `0` | `0` | `เขียน/แก้โค้ด` |
-| Member 2 | `0` | `42` | `0` | `0` | `ทำหัวข้อ Detailed code` |
+| Member 2 | `0` | `47` | `0` | `0` | `ทำหัวข้อ Detailed code` |
 | Member 3 | `0` | `8` | `0` | `0` | `ทำหัวข้อ ppl และ rust vs other language` |
 | Member 4 | `0` | `7` | `0` | `0` | `ทำหัวข้อ common mistake และ exercises /เปลี่ยน exercises` |
 
@@ -989,21 +989,21 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 
 ## 15. Final Checklist
 
-- [ ] Learning Objectives ครบ 3–4 ข้อ
-- [ ] Key Concepts ครบถ้วน
-- [ ] Syntax / Rules
-- [ ] Runnable Code Examples
-- [ ] Code Compile และ Run ได้จริง
-- [ ] Common Mistakes
-- [ ] Exercises 2 ข้อ พร้อม Solutions
-- [ ] PPL Perspective
-- [ ] Rust vs Other Language
-- [ ] References อย่างน้อย 4 แหล่ง
-- [ ] AI Usage Declaration
-- [ ] GitHub Contribution
-- [ ] สมาชิกทั้ง 4 คนมีส่วนร่วม
-- [ ] สมาชิกทั้ง 4 คนพร้อมนำเสนอคนละ 5 นาที
-- [ ] สมาชิกทุกคนสามารถอธิบาย Code ของกลุ่มได้
+- [✅] Learning Objectives ครบ 3–4 ข้อ
+- [✅] Key Concepts ครบถ้วน
+- [✅] Syntax / Rules
+- [✅] Runnable Code Examples
+- [✅] Code Compile และ Run ได้จริง
+- [✅] Common Mistakes
+- [✅] Exercises 2 ข้อ พร้อม Solutions
+- [✅] PPL Perspective
+- [✅] Rust vs Other Language
+- [✅] References อย่างน้อย 4 แหล่ง
+- [✅] AI Usage Declaration
+- [✅] GitHub Contribution
+- [✅] สมาชิกทั้ง 4 คนมีส่วนร่วม
+- [✅] สมาชิกทั้ง 4 คนพร้อมนำเสนอคนละ 5 นาที
+- [✅] สมาชิกทุกคนสามารถอธิบาย Code ของกลุ่มได้
 
 ---
 
@@ -1017,4 +1017,4 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 
 **Submitted by:** `Group 20`
 
-**Date:** `[YYYY-MM-DD]`
+**Date:** `2026-10-04`
