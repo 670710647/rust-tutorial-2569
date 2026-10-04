@@ -1011,9 +1011,9 @@ C ทำ Higher-Order Function ได้ผ่าน function pointer แต่�
 
 **Repository:** `https://github.com/670710647/rust-tutorial-2569`
 
-**Chapter Path:** `chapters/20-iterators-higher-order-programming/`
+**Chapter Path:** `/20-iterators-higher-order-programming/`
 
-**Final PR:** `#[PR number]`
+**Final PR:** `#17`
 
 **Submitted by:** `Group 20`
 
